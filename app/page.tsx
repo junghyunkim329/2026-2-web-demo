@@ -33,6 +33,12 @@ export default function Home() {
         >
           /products →
         </Link>
+        <Link
+          href="/notices"
+          className="text-sm font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
+        >
+          /notices →
+        </Link>
       </main>
     </div>
   )
