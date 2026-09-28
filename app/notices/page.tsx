@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { connection } from 'next/server'
 import { getNotices } from '@/lib/notices'
 
 export default async function NoticesPage() {
+  await connection()
   const notices = await getNotices()
 
   return (
@@ -29,6 +31,9 @@ export default async function NoticesPage() {
               </p>
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
                 {n.author} · {n.createdAt}
+              </p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                조회수 {n.views}
               </p>
             </Link>
           </li>

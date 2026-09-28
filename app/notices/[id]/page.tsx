@@ -23,6 +23,9 @@ export default async function NoticeDetailPage({ params }: Props) {
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
         {notice.author} · {notice.createdAt}
       </p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        조회수 {notice.views}
+      </p>
       <p className="whitespace-pre-wrap leading-7 text-zinc-700 dark:text-zinc-300">
         {notice.content}
       </p>

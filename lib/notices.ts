@@ -4,6 +4,7 @@ export type Notice = {
   author: string
   content: string
   createdAt: string
+  views: number
 }
 
 const notices: Notice[] = [
@@ -13,6 +14,7 @@ const notices: Notice[] = [
     author: '이병천',
     content: '강의계획서를 확인하고 열심히 공부해봐용~',
     createdAt: '2026-09-01',
+    views: 0,
   },
   {
     id: '2',
@@ -20,6 +22,7 @@ const notices: Notice[] = [
     author: '이병천',
     content: '이메일을 확인하고 가입해주세여~',
     createdAt: '2026-09-03',
+    views: 0,
   },
   {
     id: '3',
@@ -28,6 +31,7 @@ const notices: Notice[] = [
     content:
       '이번 주부터 만드는 공지사항 게시판이 학기 내내 성장하는 코스 프로젝트입니다.',
     createdAt: '2026-09-24',
+    views: 0,
   },
   {
     id: '4',
@@ -35,6 +39,7 @@ const notices: Notice[] = [
     author: '장현승',
     content: '교하 러훠 마라샹궈 먹고싶다.',
     createdAt: '2026-09-29',
+    views: 0,
   },
 ]
 
@@ -51,7 +56,11 @@ export async function getNotices(): Promise<Notice[]> {
 
 export async function getNotice(id: string): Promise<Notice | undefined> {
   await delay(400)
-  return notices.find((n) => n.id === id)
+  const notice = notices.find((n) => n.id === id)
+  if (notice) {
+    notice.views += 1
+  }
+  return notice
 }
 
 export async function createNotice(input: {
@@ -66,6 +75,7 @@ export async function createNotice(input: {
     author: input.author,
     content: input.content,
     createdAt: new Date().toISOString().slice(0, 10),
+    views: 0,
   }
   notices.push(notice)
   return notice
