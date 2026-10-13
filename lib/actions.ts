@@ -1,12 +1,12 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { AuthError } from 'next-auth'
 import { likeProduct as likeProductInDb } from '@/lib/products'
-import { createNotice } from '@/lib/notices'
-import { createUser } from '@/lib/users'
+import { revalidatePath } from 'next/cache'
+import { createNotice } from './notices'
+import { redirect } from 'next/navigation'
+import { createUser } from './users'
 import { signIn, signOut } from '@/auth'
+import { AuthError } from 'next-auth'
 
 export async function likeProductAction(id: string) {
   const newLikes = await likeProductInDb(id)
@@ -38,8 +38,9 @@ export async function registerAction(formData: FormData) {
   if (!name || !email || !password) {
     throw new Error('이름, 이메일, 비밀번호를 모두 입력해주세요.')
   }
+
   if (password.length < 8) {
-    throw new Error('비밀번호는 8자 이상이어야 합니다.')
+    throw new Error('비밀번호는 8자 이상이어야 합니다. ')
   }
 
   await createUser({ name, email, password })
