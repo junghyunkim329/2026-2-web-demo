@@ -21,23 +21,34 @@ export default function Home() {
 
         <br />
         <Link
+          href="/notices"
+          className="font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
+        >
+          /notices →
+        </Link>
+        <Link
+          href="/register"
+          className="font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
+        >
+          /register →
+        </Link>
+        <Link
           href="/about"
-          className="text-sm font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
+          className="font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
         >
           /about →
         </Link>
-
         <Link
           href="/products"
-          className="text-sm font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
+          className="font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
         >
           /products →
         </Link>
         <Link
-          href="/notices"
-          className="text-sm font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
+          href="/api/hello"
+          className="font-medium text-zinc-950 underline underline-offset-4 dark:text-zinc-50"
         >
-          /notices →
+          /api/hello →
         </Link>
       </main>
     </div>
