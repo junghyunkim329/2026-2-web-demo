@@ -1,7 +1,7 @@
-import { LikeButton } from '@/components/LikeButton'
-import { getProduct } from '@/lib/products'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import { getProduct } from '@/lib/products'
+import { addToCartAction } from '@/lib/actions'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -16,13 +16,48 @@ export default async function ProductDetailPage({ params }: Props) {
   return (
     <div className="mx-auto flex max-w-2xl flex-1 flex-col gap-6 px-8 py-16">
       <Link href="/products" className="text-sm text-zinc-500 hover:underline">
-        ← 목록
+        ← 목록으로
       </Link>
+      <span className="text-5xl" aria-hidden>
+        {product.emoji}
+      </span>
       <h1 className="text-2xl font-semibold text-black dark:text-zinc-50">
         {product.name}
       </h1>
       <p className="text-zinc-600 dark:text-zinc-400">{product.description}</p>
-      <LikeButton id={product.id} initialLikes={product.likes} />
+      <p className="text-xl font-semibold text-black dark:text-zinc-50">
+        {product.price.toLocaleString()}원
+      </p>
+      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        재고 {product.stock}개
+      </p>
+
+      <form action={addToCartAction} className="flex items-center gap-3">
+        <input type="hidden" name="productId" value={product.id} />
+        <label
+          className="text-sm text-zinc-600 dark:text-zinc-400"
+          htmlFor="qty"
+        >
+          수량
+        </label>
+        <input
+          id="qty"
+          name="qty"
+          type="number"
+          min={1}
+          max={Math.max(product.stock, 1)}
+          defaultValue={1}
+          disabled={product.stock === 0}
+          className="w-20 rounded-md border border-black/[.08] px-2 py-1.5 text-sm dark:border-white/[.145] dark:bg-transparent"
+        />
+        <button
+          type="submit"
+          disabled={product.stock === 0}
+          className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-white dark:text-black"
+        >
+          {product.stock === 0 ? '품절' : '장바구니에 담기'}
+        </button>
+      </form>
     </div>
   )
 }

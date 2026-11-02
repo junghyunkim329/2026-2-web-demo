@@ -26,12 +26,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const isValid = await bcrypt.compare(password, user.passwordHash)
         if (!isValid) return null // 비밀번호 불일치
 
-        return { id: String(user._id), name: user.name, email: user.email }
+        return {
+          id: String(user._id),
+          name: user.name,
+          email: user.email,
+          role: user.role ?? 'user',
+        }
       },
     }),
   ],
   pages: {
     signIn: '/login',
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+        token.role = user.role ?? 'user'
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (typeof token.id === 'string') session.user.id = token.id
+      session.user.role = token.role === 'admin' ? 'admin' : 'user'
+      return session
+    },
   },
   session: {
     strategy: 'jwt',
