@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 
 const CART_COOKIE = 'cart'
-const CART_MAX_AGE = 60 * 60 * 24 * 30 // 30일
+const CART_MAX_AGE = 60 * 60 * 24 * 30
 
 export type CartLine = { productId: string; qty: number }
 
@@ -68,4 +68,8 @@ export async function updateCartQty(productId: string, qty: number) {
 export async function removeFromCart(productId: string) {
   const lines = await readCart()
   await writeCart(lines.filter((line) => line.productId !== productId))
+}
+
+export async function clearCart() {
+  await writeCart([])
 }

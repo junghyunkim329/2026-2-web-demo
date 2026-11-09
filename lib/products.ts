@@ -66,13 +66,6 @@ const SEED_PRODUCTS = [
     emoji: '💻',
     stock: 20,
   },
-  {
-    name: '노트북 키보드 스킨',
-    description: '투명 키보드 스킨',
-    price: 12000,
-    emoji: '💻',
-    stock: 50,
-  },
 ]
 
 async function seedIfEmpty() {
@@ -112,4 +105,9 @@ export async function getProductsByIds(ids: string[]): Promise<Product[]> {
   } catch {
     return []
   }
+}
+
+export async function decrementStock(productId: string, qty: number) {
+  await connectDB()
+  await ProductModel.updateOne({ _id: productId }, { $inc: { stock: -qty } })
 }
