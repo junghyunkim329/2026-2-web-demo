@@ -1,10 +1,30 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+import { connectDB } from './lib/mongodb'
+import { User } from './models/User'
 import bcrypt from 'bcryptjs'
-import { connectDB } from '@/lib/mongodb'
-import { User } from '@/models/User'
+import { authConfig } from './auth.config'
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+type UserDocLike = {
+  _id: unknown
+  name: string
+  email: string
+  passwordHash: string
+  role?: 'user' | 'admin'
+}
+
+function assertAuthSecret(): string {
+  const secret = process.env.AUTH_SECRET
+  if (!secret) {
+    throw new Error('AUTH_SECRET 환경변수가 없습니다.')
+  }
+  return secret
+}
+
+const authSecret = assertAuthSecret()
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -21,10 +41,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!email || !password) return null
 
         await connectDB()
-        const user = await User.findOne({ email: email.toLowerCase() })
+        const user = await User.findOne({
+          email: email.toLowerCase(),
+        }).lean<UserDocLike>()
+
         if (!user) return null
+
         const isValid = await bcrypt.compare(password, user.passwordHash)
-        if (!isValid) return null // 비밀번호 불일치
+        if (!isValid) return null
 
         return {
           id: String(user._id),
@@ -35,24 +59,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  pages: {
-    signIn: '/login',
+  secret: authSecret,
+  session: {
+    strategy: 'jwt',
   },
   callbacks: {
+    ...authConfig.callbacks,
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = user.role ?? 'user'
+        token.role = (user as { role?: 'user' | 'admin' }).role ?? 'user'
       }
       return token
     },
+
     async session({ session, token }) {
-      if (typeof token.id === 'string') session.user.id = token.id
-      session.user.role = token.role === 'admin' ? 'admin' : 'user'
+      if (session.user) {
+        session.user.id = String(token.id)
+        session.user.role =
+          (token.role as 'user' | 'admin' | undefined) ?? 'user'
+      }
       return session
     },
-  },
-  session: {
-    strategy: 'jwt',
   },
 })

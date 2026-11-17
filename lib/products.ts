@@ -66,6 +66,13 @@ const SEED_PRODUCTS = [
     emoji: '💻',
     stock: 20,
   },
+  {
+    name: '노트북 키보드 스킨',
+    description: '투명 키보드 스킨',
+    price: 12000,
+    emoji: '💻',
+    stock: 50,
+  },
 ]
 
 async function seedIfEmpty() {
@@ -110,4 +117,25 @@ export async function getProductsByIds(ids: string[]): Promise<Product[]> {
 export async function decrementStock(productId: string, qty: number) {
   await connectDB()
   await ProductModel.updateOne({ _id: productId }, { $inc: { stock: -qty } })
+}
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+export async function searchProducts(rawQuery: unknown): Promise<Product[]> {
+  await connectDB()
+  await seedIfEmpty()
+
+  if (typeof rawQuery !== 'string' || rawQuery.trim() === '') {
+    return getProducts()
+  }
+
+  const safePattern = escapeRegExp(rawQuery.trim())
+  const docs = await ProductModel.find({
+    name: { $regex: safePattern, $options: 'i' },
+  })
+    .sort({ createdAt: 1 })
+    .lean<ProductDoc[]>()
+  return docs.map(toProduct)
 }
